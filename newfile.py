@@ -1,4 +1,4 @@
-from google.generativeai import Completion
+from google.cloud import texttospeech_v1beta1 as texttospeech
 from twitchio.ext import commands
 
 # Restante do código...
@@ -14,19 +14,18 @@ bot = commands.Bot(
     token=oauth_token,
     client_id=client_id,
     nick="hawkinngx",
-    prefix="!",
+    prefix="!",  # Corrigido para string
     initial_channels=[channel_name],
 )
 
 @bot.command(name="gpt")
 async def generate_question(ctx):
     # Gera uma pergunta usando a API Generative AI
-    completion = Completion.generate(
-        prompt="Crie uma pergunta interessante para o chat da Twitch:",
-        max_tokens=32,
-        temperature=0.7,
+    client = texttospeech.CompletionClient()
+    completion = client.generate_completion(
+        request={"prompt": "Crie uma pergunta interessante para o chat da Twitch:", "max_tokens": 32, "temperature": 0.7}
     )
-    question = completion.choices[0].text.strip()
+    question = completion.text.strip()
 
     # Envia a pergunta para o chat
     await ctx.send(f"{question}")
